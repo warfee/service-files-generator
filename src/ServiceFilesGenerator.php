@@ -83,11 +83,11 @@ class ServiceFilesGenerator
     	return app_path("Services/{$serviceName}.php");
     }
 
-    public function getTableColumn(){
+    public function getTableColumn($tableName){
 
     	return DB::connection($this->databaseDriver)
     			->getSchemaBuilder()
-    			->getColumnListing($table->$parameterKey);
+    			->getColumnListing($tableName);
     }
 
     public function generateColumnStubLayout($columns){
@@ -108,7 +108,7 @@ class ServiceFilesGenerator
     		$serviceName = $this->getServiceName($tableName);
 		    $serviceDir = $this->getServiceDirectory($serviceName);
 
-	        $columns = $this->getTableColumn($);
+	        $columns = $this->getTableColumn($tableName);
 	        $columnLayouts = $this->generateColumnStubLayout($columns);
 
 	        $stubContent = Str::replace('{{ serviceName }}', $serviceName, $stubContent);
