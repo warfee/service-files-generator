@@ -1,0 +1,123 @@
+<?php
+
+namespace App\Services;
+
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+use App\Helpers\ErrorLogger;
+use App\Helpers\ServiceReturner;
+
+class {{ serviceName }}
+{
+    use ErrorLogger, ServiceReturner;
+
+    public function all()
+    {
+        try {
+
+            $data = DB::table('{{ tableName }}')->get();
+
+            return $this->returnSuccess($data);
+
+        } catch (\Throwable $e) {
+
+            $this->setLogInfo(
+                    class_basename(get_class($this)),
+                    __FUNCTION__,
+                    $e->getMessage(),
+                    $e->getLine()
+            );
+
+            return $this->returnError($e->getMessage());
+        }
+    }
+
+
+    public function add(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            DB::table('{{ tableName }}')->insert([
+{{ tableColumns }},
+                'created_at' => Carbon::now()
+            ]);
+
+            DB::commit();
+
+            return $this->success();
+
+        } catch (\Throwable $e) {
+
+            DB::rollback();
+
+            return $this->error($e->getMessage());
+        }
+    }
+
+    public function get(Request $request)
+    {
+        try {
+
+            $data = DB::table('{{ tableName }}')
+                      ->where('id', $request->id)
+                      ->whereNull('deleted_at')
+                      ->first();
+
+            return $this->success($data);
+
+        } catch (\Throwable $e) {
+
+            return $this->error($e->getMessage());
+
+        }
+    }
+
+    public function update(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            DB::table('{{ tableName }}')->where('id', $request->id)->update([
+{{ tableColumns }},
+                'updated_at' => Carbon::now()
+                ]);
+
+            DB::commit();
+
+            return $this->success();
+
+        } catch (\Throwable $e) {
+
+            DB::rollback();
+
+            return $this->error($e->getMessage());
+        }
+    }
+
+    public function delete(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+
+            DB::table('{{ tableName }}')
+                ->where('id', $request->id)
+                ->delete();
+
+            DB::commit();
+
+            return $this->success();
+
+        } catch (\Throwable $e) {
+
+            DB::rollback();
+
+            return $this->error($e->getMessage());
+        }
+    }
+
+}
