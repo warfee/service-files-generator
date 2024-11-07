@@ -1,52 +1,48 @@
-# Very short description of the package
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/warfee/mysql-services-generator.svg?style=flat-square)](https://packagist.org/packages/warfee/mysql-services-generator)
-[![Total Downloads](https://img.shields.io/packagist/dt/warfee/mysql-services-generator.svg?style=flat-square)](https://packagist.org/packages/warfee/mysql-services-generator)
-![GitHub Actions](https://github.com/warfee/mysql-services-generator/actions/workflows/main.yml/badge.svg)
+# Laravel Service Files Generator
 
-This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what PSRs you support to avoid any confusion with users and contributors.
-
+If you not work with model, it allows you to generate automatically service file for each database tables.
 ## Installation
 
-You can install the package via composer:
+Install warfee/service-files-generator with composer
 
 ```bash
-composer require warfee/mysql-services-generator
+  composer require warfee/service-files-generator
 ```
 
+Put library path to application service provider file
+
+```bash
+  Warfee\ServiceFilesGenerator\ServiceFilesGeneratorServiceProvider::class,
+
+```
+
+Publish Helpers File
+
+```bash
+  php artisan vendor:publish --tag=service-generator-helpers
+
+```
+    
+
+
+    
 ## Usage
 
-```php
-// Usage description here
-```
+Running command. By default it will run from mysql connection.
 
-### Testing
+Column : created_at, updated_at, deleted_at timestamp will be ignore. Timestamp will be use based on method action
 
 ```bash
-composer test
+  php artisan service-generator:create
 ```
 
-### Changelog
+Command Options
 
-Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
+- Driver (driver : mysql or sqlite)
+- Soft Delete, each record will consider deleted_at field. (softDelete : true or false)
+ 
 
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-### Security
-
-If you discover any security related issues, please email warfee619916@gmail.com instead of using the issue tracker.
-
-## Credits
-
--   [warfee](https://github.com/warfee)
--   [All Contributors](../../contributors)
-
-## License
-
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
-
-## Laravel Package Boilerplate
-
-This package was generated using the [Laravel Package Boilerplate](https://laravelpackageboilerplate.com).
+```bash
+  php artisan service-generator:create {driver=mysql} {softDelete=false}
+```
