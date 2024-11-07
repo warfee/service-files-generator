@@ -11,7 +11,7 @@ class ServiceFilesGenerator
 {
 	private $databaseDriver;
 	private $useSoftDelete;
-	private $columnParameterKey;
+	private $tableParameterKey;
 
 
 	public function __construct($databaseDriver,$useSoftDelete){
@@ -46,7 +46,7 @@ class ServiceFilesGenerator
 
     public function mySqlDriver(){
 
-        $this->columnParameterKey = 'Tables_in_'. env('DB_DATABASE');
+        $this->tableParameterKey = 'Tables_in_'. env('DB_DATABASE');
 
         return DB::connection('mysql')->select('SHOW TABLES');
 
@@ -75,7 +75,7 @@ class ServiceFilesGenerator
 
     public function getServiceName($tableName){
 
-    	return Str::studly(Str::replace('_', ' ', $table->$parameterKey)).'Services';
+    	return Str::studly(Str::replace('_', ' ', $tableName)).'Services';
     }
 
     public function getServiceDirectory($tableName){
@@ -103,14 +103,16 @@ class ServiceFilesGenerator
 
     	foreach (collect($tables) as $table) {
 
-    		$serviceName = $this->getServiceName($table->$parameterKey);
+    		$tableName = $table->{$this->tableParameterKey};
+
+    		$serviceName = $this->getServiceName($tableName);
 		    $serviceDir = $this->getServiceDirectory($serviceName);
 
-	        $columns = $this->getTableColumn();
+	        $columns = $this->getTableColumn($);
 	        $columnLayouts = $this->generateColumnStubLayout($columns);
 
 	        $stubContent = Str::replace('{{ serviceName }}', $serviceName, $stubContent);
-	        $stubContent = Str::replace('{{ tableName }}', $table->$parameterKey, $stubContent);
+	        $stubContent = Str::replace('{{ tableName }}', $tableName, $stubContent);
 	        $stubContent = Str::replace('{{ tableColumns }}', $columnLayouts, $stubContent);
 
 	        $this->generateServiceFile($serviceDir,$stubContent);
