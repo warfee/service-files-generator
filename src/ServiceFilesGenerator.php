@@ -78,7 +78,7 @@ class ServiceFilesGenerator
     	return Str::studly(Str::replace('_', ' ', $tableName)).'Services';
     }
 
-    public function getServiceDirectory($tableName){
+    public function getServiceDirectory($serviceName){
 
     	return app_path("Services/{$serviceName}.php");
     }
