@@ -21,7 +21,7 @@ class ServiceFilesGenerator
 
 	}
 
-	private function fetchDatabaseTables(){
+	public function fetchDatabaseTables(){
 
 		try{
 
@@ -44,7 +44,7 @@ class ServiceFilesGenerator
 		}
 	}
 
-    private function mySqlDriver(){
+    public function mySqlDriver(){
 
         $this->columnParameterKey = 'Tables_in_'. env('DB_DATABASE');
 
@@ -52,13 +52,13 @@ class ServiceFilesGenerator
 
     }
 
-    private function sqlLiteDriver(){
+    public function sqlLiteDriver(){
 
     	$tables = DB::select("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
 
     }
 
-    private function stubTemplate(){
+    public function stubTemplate(){
 
     	$stubPathFile = $this->useSoftDelete == false ? 'service-generator.stub' : 'service-generator-soft-delete.stub';
 
@@ -68,29 +68,29 @@ class ServiceFilesGenerator
 
     }
 
-    private function getStubContent($stubPath){
+    public function getStubContent($stubPath){
 
     	return File::get($stubPath);
     }
 
-    private function getServiceName($tableName){
+    public function getServiceName($tableName){
 
     	return Str::studly(Str::replace('_', ' ', $table->$parameterKey)).'Services';
     }
 
-    private function getServiceDirectory($tableName){
+    public function getServiceDirectory($tableName){
 
     	return app_path("Services/{$serviceName}.php");
     }
 
-    private function getTableColumn(){
+    public function getTableColumn(){
 
     	return DB::connection($this->databaseDriver)
     			->getSchemaBuilder()
     			->getColumnListing($table->$parameterKey);
     }
 
-    private function generateColumnStubLayout($columns){
+    public function generateColumnStubLayout($columns){
 
     	$columnLayouts = collect($columns)->map(function ($column) {
                             return "                '{$column}' => \$request->" . $column;
@@ -99,7 +99,7 @@ class ServiceFilesGenerator
     	return $columnLayouts;
     }
 
-    private function placingStubParameter($stubContent,$tables){
+    public function placingStubParameter($stubContent,$tables){
 
     	foreach (collect($tables) as $table) {
 
@@ -120,7 +120,7 @@ class ServiceFilesGenerator
 
     }
 
-    private function generateServiceFile($serviceDir,$stubContent){
+    public function generateServiceFile($serviceDir,$stubContent){
 
 	    if (!Storage::exists($serviceDir)) {
             File::put($serviceDir,$stubContent);
