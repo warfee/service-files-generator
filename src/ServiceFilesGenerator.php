@@ -62,7 +62,7 @@ class ServiceFilesGenerator
 
     	$stubPathFile = $this->useSoftDelete == false ? 'service-generator.stub' : 'service-generator-soft-delete.stub';
 
-    	$stubPath = base_path('vendor/warfee/mysql-services-generator/src/Stubs/'.$stubPathFile);
+    	$stubPath = base_path('vendor/warfee/service-files-generator/src/Stubs/'.$stubPathFile);
 
     	return $this->getStubContent($stubPath);
 
