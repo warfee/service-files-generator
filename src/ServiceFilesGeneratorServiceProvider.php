@@ -5,7 +5,7 @@ namespace Warfee\ServiceFilesGenerator;
 use Illuminate\Support\ServiceProvider;
 use Warfee\ServiceFilesGenerator\Console\Commands\GenerateServiceFiles;
 
-class ServiceFilesGeneratorProvider extends ServiceProvider
+class ServiceFilesGeneratorServiceProvider extends ServiceProvider
 {
     public function boot()
     {
