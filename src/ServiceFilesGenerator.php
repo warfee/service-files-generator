@@ -62,7 +62,12 @@ class ServiceFilesGenerator
 
     public function stubTemplate(){
 
-    	$stubPathFile = $this->useSoftDelete == false ? 'service-generator.stub' : 'service-generator-soft-delete.stub';
+    	$stubPathFile = "service-generator.stub";
+
+    	if($this->useSoftDelete == "true"){
+
+    		$stubPathFile = "service-generator-soft-delete.stub";
+    	}
 
     	$stubPath = base_path('vendor/warfee/service-files-generator/src/Stubs/'.$stubPathFile);
 
@@ -87,9 +92,13 @@ class ServiceFilesGenerator
 
     public function getTableColumn($tableName){
 
-    	return DB::connection($this->databaseDriver)
+    	$columns DB::connection($this->databaseDriver)
     			->getSchemaBuilder()
     			->getColumnListing($tableName);
+
+    	$filteredColumns = array_diff($columns, ['created_at', 'updated_at', 'deleted_at']);
+
+		return $filteredColumns;
     }
 
     public function generateColumnStubLayout($columns){
@@ -136,9 +145,9 @@ class ServiceFilesGenerator
 
     	$directory = app_path("Services");
 
-    	if (!Storage::exists($directory)) {
+    	if (File::exists($directory) != 1) {
 
-    		Storage::makeDirectory($directory);
+    		mkdir($directory, 0777, true);
 
     		return true;
 
