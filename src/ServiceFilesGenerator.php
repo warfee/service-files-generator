@@ -19,6 +19,8 @@ class ServiceFilesGenerator
 		$this->databaseDriver = $databaseDriver;
 		$this->useSoftDelete = $useSoftDelete;
 
+		$this->checkServiceDiretoryPath();
+
 	}
 
 	public function fetchDatabaseTables(){
@@ -128,6 +130,19 @@ class ServiceFilesGenerator
             File::put($serviceDir,$stubContent);
 
         }
+    }
+
+    public function checkServiceDiretoryPath(){
+
+    	$directory = app_path("Services");
+
+    	if (!Storage::exists($directory)) {
+
+    		Storage::makeDirectory($directory);
+
+    		return true;
+
+    	}
     }
 
 }
