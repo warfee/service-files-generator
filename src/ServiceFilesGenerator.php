@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class ServiceFilesGenerator
 {
@@ -117,6 +118,7 @@ class ServiceFilesGenerator
     		$tableName = $table->{$this->tableParameterKey};
 
     		$serviceName = $this->getServiceName($tableName);
+    		Log::info($serviceName);
 		    $serviceDir = $this->getServiceDirectory($serviceName);
 
 	        $columns = $this->getTableColumn($tableName);
