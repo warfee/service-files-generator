@@ -39,24 +39,54 @@ class GenerateServiceFiles extends Command
         $softDelete = $this->choice(
             'Do you implement soft delete for your service table? All your table need to have deleted_at column field.',
             ['true', 'false'],
-            $defaultIndex = 0,
+            $defaultIndex = 1,
             $maxAttempts = null,
             $allowMultipleSelections = false
         );
         
 
         $generatorSetup = new ServiceFilesGenerator($driver,$softDelete);
+
+        $serviceFileExist = $generatorSetup->checkServiceFiles();
+
+        if($serviceFileExist == 1){
+
+            $nextStep = $this->choice(
+                'There are files found in app/Services, choose yes to continue. All service file will update latest content.',
+                ['yes', 'no'],
+                $defaultIndex = 1,
+                $maxAttempts = null,
+                $allowMultipleSelections = false
+            );
+
+            
+        }
+
+        if($nextStep == 'no'){
+
+            $this->error('Generator aborted.');
+
+            return 1;
+        }
+
+        $this->info('Generator proceed to continue.');
+
         $stubContent = $generatorSetup->stubTemplate();
+
+        $this->info('Fetching database tables and columns.');
+
         $tables = $generatorSetup->fetchDatabaseTables();
 
         if(empty($tables)){
 
             $this->error('Error! Unable to connect with database driver. Please check your database driver connection');
-            
+
             return 1;
         }
 
         $generate = $generatorSetup->placingStubParameter($stubContent,$tables);
+
+        $this->info('Service files generated.');
     }
         
 }

@@ -1,7 +1,8 @@
 
 # Laravel Service Files Generator
 
-If you not work with model, it allows you to generate automatically service file for each database tables.
+It allows you to generate automatically service file for each database tables.
+
 ## Installation
 
 Install warfee/service-files-generator with composer
