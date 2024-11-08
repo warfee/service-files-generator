@@ -1,6 +1,6 @@
 <?php
 
-namespace Warfee\ServiceFilesGenerator\Helpers;
+namespace App\Helpers;
 
 trait ServiceReturner
 {
