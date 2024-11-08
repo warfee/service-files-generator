@@ -105,7 +105,7 @@ class ServiceFilesGenerator
     public function generateColumnStubLayout($columns){
 
     	$columnLayouts = collect($columns)->map(function ($column) {
-                            return "                '{$column}' => \$request->" . $column;
+                            return "                '{$column}' => \$request->" . Str::replace('-', '_', $column);
                         })->implode(",\n");
 
     	return $columnLayouts;
@@ -113,22 +113,25 @@ class ServiceFilesGenerator
 
     public function placingStubParameter($stubContent,$tables){
 
+    	$rawTemplate = $stubContent;
+
     	foreach (collect($tables) as $table) {
 
     		$tableName = $table->{$this->tableParameterKey};
 
-    		$serviceName = $this->getServiceName($tableName);
-    		Log::info($serviceName);
-		    $serviceDir = $this->getServiceDirectory($serviceName);
+    		$serviceClassName = $this->getServiceName($tableName);
+    		
+		    $serviceDir = $this->getServiceDirectory($serviceClassName);
 
 	        $columns = $this->getTableColumn($tableName);
 	        $columnLayouts = $this->generateColumnStubLayout($columns);
 
-	        $stubContent = Str::replace('{{ serviceName }}', $serviceName, $stubContent);
+	        $stubContent = Str::replace('{{ serviceName }}', $serviceClassName, $stubContent);
 	        $stubContent = Str::replace('{{ tableName }}', $tableName, $stubContent);
 	        $stubContent = Str::replace('{{ tableColumns }}', $columnLayouts, $stubContent);
 
 	        $this->generateServiceFile($serviceDir,$stubContent);
+	        $stubContent = $rawTemplate;
 
     	}
 
