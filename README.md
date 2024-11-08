@@ -1,4 +1,3 @@
-
 # Laravel Service Files Generator
 
 It allows you to generate automatically service file for each database tables.
