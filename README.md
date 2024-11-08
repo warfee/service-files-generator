@@ -31,4 +31,3 @@ Implement Soft Delete : true, false
 ```bash
   php artisan service-generator:create
 ```
-
