@@ -26,24 +26,13 @@ class ServiceFilesGenerator
 
 	public function fetchDatabaseTables(){
 
-		try{
+		if($this->databaseDriver == 'mysql'){
 
-			if($this->databaseDriver == 'mysql'){
+			return $this->mySqlDriver();
 
-				return $this->mySqlDriver();
+		}elseif($this->databaseDriver == 'sqlite'){
 
-			}elseif($this->databaseDriver == 'sqlite'){
-
-				return $this->sqlLiteDriver();
-
-			}else{
-
-				return false;
-			}
-
-		}catch(\Exception $e){
-
-			return false;
+			return $this->sqlLiteDriver();
 		}
 	}
 
@@ -51,14 +40,19 @@ class ServiceFilesGenerator
 
         $this->tableParameterKey = 'Tables_in_'. env('DB_DATABASE');
 
-        return DB::connection('mysql')->select('SHOW TABLES');
+        $tables = DB::connection($this->databaseDriver)->select('SHOW TABLES');
+
+        return $tables;
 
     }
 
     public function sqlLiteDriver(){
 
-    	$tables = DB::select("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
+    	$this->tableParameterKey = 'name';
 
+    	$tables = DB::connection($this->databaseDriver)->select("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
+
+    	return $tables;
     }
 
     public function stubTemplate(){
@@ -83,6 +77,8 @@ class ServiceFilesGenerator
 
     public function getServiceName($tableName){
 
+    	$tableName = preg_replace('/^\d+/', '', $tableName);
+    	
     	return Str::studly(Str::replace('_', ' ', $tableName)).'Services';
     }
 
