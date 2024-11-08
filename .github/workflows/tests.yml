@@ -1,36 +1,67 @@
 name: Tests
-
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-    test:
-        runs-on: ${{ matrix.os }}
-        strategy:
-            fail-fast: true
-            matrix:
-                os: [ubuntu-latest, windows-latest]
-                php: [8.2, 7.4]
-                stability: [prefer-lowest, prefer-stable]
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        php: [8.2, 8.1, 7.4]
+        stability: [prefer-lowest, prefer-stable]
+        include:
+          - php: 8.2
+            stability: prefer-stable
+            analysis: true
 
-        name: P${{ matrix.php }} - ${{ matrix.stability }} - ${{ matrix.os }}
+    name: PHP ${{ matrix.php }} - ${{ matrix.stability }} - ${{ matrix.os }}
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v2
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-            - name: Setup PHP
-              uses: shivammathur/setup-php@v2
-              with:
-                  php-version: ${{ matrix.php }}
-                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
-                  coverage: none
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
+          coverage: xdebug
+          tools: composer:v2
 
-            - name: Setup problem matchers
-              run: |
-                  echo "::add-matcher::${{ runner.tool_cache }}/php.json"
-                  echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
-            - name: Install dependencies
-              run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction
+      - name: Setup problem matchers
+        run: |
+          echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+          echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
-            # - name: Execute tests
-            #   run: vendor/bin/phpunit
+      - name: Install dependencies
+        run: |
+          composer require --dev phpunit/phpunit
+          composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
+
+      - name: List Installed Dependencies
+        run: composer show -D
+
+      - name: Run PHP CS Fixer
+        run: |
+          composer require --dev friendsofphp/php-cs-fixer
+          vendor/bin/php-cs-fixer fix --diff --dry-run
+
+      - name: Execute Unit Tests
+        run: vendor/bin/phpunit --testdox --colors=always
+
+      - name: Run Static Analysis
+        if: matrix.analysis
+        run: |
+          composer require --dev phpstan/phpstan
+          vendor/bin/phpstan analyse src tests --level=5
+
+      - name: Upload coverage reports to Codecov
+        if: matrix.php == '8.2' && matrix.os == 'ubuntu-latest' && matrix.stability == 'prefer-stable'
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
