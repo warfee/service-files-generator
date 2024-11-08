@@ -32,3 +32,4 @@ Implement Soft Delete : true, false
   php artisan service-generator:create
 ```
 
+
