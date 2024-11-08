@@ -93,7 +93,7 @@ class ServiceFilesGenerator
 
     public function getTableColumn($tableName){
 
-    	$columns DB::connection($this->databaseDriver)
+    	$columns = DB::connection($this->databaseDriver)
     			->getSchemaBuilder()
     			->getColumnListing($tableName);
 
