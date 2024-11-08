@@ -59,14 +59,14 @@ class GenerateServiceFiles extends Command
                 $allowMultipleSelections = false
             );
 
+            if($nextStep == 'no'){
+
+                $this->error('Generator aborted.');
+
+                return 1;
+            }
+
             
-        }
-
-        if($nextStep == 'no'){
-
-            $this->error('Generator aborted.');
-
-            return 1;
         }
 
         $this->info('Generator proceed to continue.');
