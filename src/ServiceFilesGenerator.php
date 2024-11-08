@@ -177,7 +177,7 @@ class ServiceFilesGenerator
     	$errorLoggerPath = $directory . '/ErrorLogger.php';
     	$serviceReturnerPath = $directory . '/ServiceReturner.php';
 
-    	if (File::exists($errorLoggerPath) || File::exists($serviceReturnerPath)) {
+    	if (!File::exists($errorLoggerPath) || !File::exists($serviceReturnerPath)) {
 
     		Artisan::call('vendor:publish --tag=service-generator-helpers');
 
